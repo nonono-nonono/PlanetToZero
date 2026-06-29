@@ -6,10 +6,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    private Rigidbody2D _rb;
-
     [SerializeField] private float _speed;
     private Vector2 _direction;
+    private Rigidbody2D _rb;
 
     void Awake()
     {
