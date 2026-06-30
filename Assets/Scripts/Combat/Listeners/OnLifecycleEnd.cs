@@ -1,6 +1,7 @@
+using System.Collections.Generic;
 using UnityEngine;
 
-public class onLifecycleEndDelete : MonoBehaviour
+public class onLifecycleEnd : ListenerBase
 {
     private ILifecycle _lifecycleComp;
 
@@ -10,16 +11,19 @@ public class onLifecycleEndDelete : MonoBehaviour
 
         if (_lifecycleComp == null)
         {
-            Debug.Log($"Could not add OnDeathDelete to {gameObject}! Missing a health component!");
+            Debug.Log($"Could not add onLifecycleEnd to {gameObject}! Missing a Lifecycle component!");
         }
         else
         {
-            _lifecycleComp.OnLifecycleEnd += HandleDeath;
+            _lifecycleComp.OnLifecycleEnd += Fire;
         }
     }
 
-    void HandleDeath()
+    void Fire()
     {
-        Destroy(gameObject);
+        foreach (IReaction reaction in Reactions)
+        {
+            reaction.Execute();
+        }
     }
 }

@@ -1,16 +1,12 @@
+using System;
 using UnityEngine;
 
-public class Death : MonoBehaviour
+public class Death : MonoBehaviour, IReaction
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private GameObject _target;
 
-    // Update is called once per frame
-    void Update()
+    public void Execute()
     {
-        
+        Destroy(_target);
     }
 }
