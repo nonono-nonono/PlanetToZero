@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class onEndDelete : MonoBehaviour
+public class onLifecycleEndDelete : MonoBehaviour
 {
     private ILifecycle _lifecycleComp;
 
