@@ -14,6 +14,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": true
+                },
+                {
+                    "name": "ClickAttack",
+                    "type": "Button",
+                    "id": "6cd3de29-777c-4e72-a1db-abd2d2a3239b",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -71,6 +80,17 @@
                     "action": "Move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "7dd2d93f-3c92-4841-8b16-f8ae356106d4",
+                    "path": "<Mouse>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ClickAttack",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
