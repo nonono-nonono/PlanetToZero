@@ -1,11 +1,11 @@
 using System;
 using UnityEngine;
 
-public class Death : MonoBehaviour, IReaction
+public class Death : ReactionBase
 {
     [SerializeField] private GameObject _target;
 
-    public void Execute()
+    public override void Execute()
     {
         Destroy(_target);
     }

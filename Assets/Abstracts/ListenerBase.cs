@@ -3,5 +3,6 @@ using UnityEngine;
 
 public abstract class ListenerBase : MonoBehaviour
 {
-    [field: SerializeField] public List<IReaction> Reactions {get; private set;} = new();
+    [SerializeField] protected List<ReactionBase> Reactions;
+    public abstract void Fire();
 }

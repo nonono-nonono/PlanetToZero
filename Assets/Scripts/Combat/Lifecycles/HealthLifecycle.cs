@@ -1,11 +1,12 @@
+using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-
-public class HealthLifecycle : MonoBehaviour, ILifecycle
+public class HealthLifecycle : MonoBehaviour, IListenable
 {
     [field: SerializeField] public float Max {get; private set;}
     [field: SerializeField] public float Current {get; private set;}
-    public event UnityAction OnLifecycleEnd;
+
+    public List<ListenerBase> ListenerList;
+    private List<ListenerBase> _listenerList;
 
     void Awake()
     {
@@ -15,13 +16,31 @@ public class HealthLifecycle : MonoBehaviour, ILifecycle
         }
     }
 
+    void Start()
+    {
+        _listenerList = ListenerList;
+    }
+
+    public void Register(ListenerBase listener)
+    {
+        _listenerList.Add(listener);
+    }
+
+    public void Deregister(ListenerBase listener)
+    {
+        _listenerList.Remove(listener);
+    }
+
     public void TakeDamage(float amount)
     {
         Current = Mathf.Max(0, Current - amount);
 
         if (Current <= 0)
         {
-            OnLifecycleEnd?.Invoke();
+            foreach(ListenerBase listener in _listenerList)
+            {
+                listener.Fire();
+            }
         }
     }
 
