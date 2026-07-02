@@ -1,7 +1,6 @@
-using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class ReactionBase : MonoBehaviour
 {
-    public abstract void Execute();
+    public abstract void Execute(EventContext ctx);
 }

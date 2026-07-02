@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
-public class HealthLifecycle : MonoBehaviour, IListenable
+
+public class HealthLifecycle : MonoBehaviour, IListenable, IAttackable
 {
     [field: SerializeField] public float Max {get; private set;}
     [field: SerializeField] public float Current {get; private set;}
+    [field: SerializeField] public List<ListenerBase> ListenerList {get; private set;}
 
-    public List<ListenerBase> ListenerList;
-    private List<ListenerBase> _listenerList;
+    private AttackManager _attackManager;
 
     void Awake()
     {
@@ -16,32 +17,43 @@ public class HealthLifecycle : MonoBehaviour, IListenable
         }
     }
 
-    void Start()
+    public void GetAttackManagerReference(AttackManager attackManager)
     {
-        _listenerList = ListenerList;
+        _attackManager = attackManager;
     }
 
     public void Register(ListenerBase listener)
     {
-        _listenerList.Add(listener);
+        ListenerList.Add(listener);
     }
 
     public void Deregister(ListenerBase listener)
     {
-        _listenerList.Remove(listener);
+        ListenerList.Remove(listener);
     }
 
-    public void TakeDamage(float amount)
+    public float TakeDamage(float amount)
     {
+        float remainder = 0;
+
+        if (amount > Current)
+        {
+            remainder = amount - Current;
+        }
+
         Current = Mathf.Max(0, Current - amount);
 
         if (Current <= 0)
         {
-            foreach(ListenerBase listener in _listenerList)
+            foreach(ListenerBase listener in ListenerList)
             {
-                listener.Fire();
+                listener.Fire(null);
             }
+
+            _attackManager.DeregisterAttackable(this);
         }
+
+        return remainder;
     }
 
     public void Heal(float amount)

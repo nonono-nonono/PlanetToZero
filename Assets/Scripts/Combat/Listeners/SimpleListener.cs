@@ -2,11 +2,11 @@ using UnityEngine;
 
 public class SimpleListener : ListenerBase
 {
-    public override void Fire()
+    public override void Fire(EventContext ctx)
     {
         foreach (ReactionBase reaction in Reactions)
         {
-            reaction.Execute();
+            reaction.Execute(ctx);
         }
     }
 }
