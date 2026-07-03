@@ -1,17 +1,26 @@
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
+
+public enum Team
+{
+    Player,
+    Enemy
+}
 
 public class AttackManager : MonoBehaviour
 {
+    // Work around for Unity limitation on showing List<Interfaces> in Inspector
     public List<MonoBehaviour> AttackableObjs;
     private List<IAttackable> _attackables;
+    [SerializeField] private Team _team;
     
-
     void Awake()
     {
-       _attackables = AttackableObjs.Where(a => a is IAttackable).Cast<IAttackable>().ToList();
+       _attackables = AttackableObjs
+        .Where(a => a is IAttackable)
+        .Cast<IAttackable>()
+        .ToList();
     }
 
     void Start()
@@ -20,12 +29,23 @@ public class AttackManager : MonoBehaviour
         {
             attackable.GetAttackManagerReference(this);
         }
-
-        DealDamageDefault(AttackTypes.Basic, 100f);
     }
 
-    public void DealDamageDefault(AttackTypes attackType, float amount)
+    void OnEnable()
     {
+        AttackManagerRegistry.Managers.Add(this);
+    }
+
+    void OnDisable()
+    {
+        AttackManagerRegistry.Managers.Remove(this);
+    }
+
+
+    public void DealDamageDefault(AttackTypes attackType, Team team, float amount)
+    {
+        if (team == _team) return;
+
         List<IAttackable> targets = _attackables.OrderByDescending(a => AttackablePriorities.GetPriority(attackType, a)).ToList();
 
         float remainder = amount;

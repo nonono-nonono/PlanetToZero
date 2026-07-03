@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class HealthLifecycle : MonoBehaviour, IListenable, IAttackable
 {
-    [field: SerializeField] public float Max {get; private set;}
-    [field: SerializeField] public float Current {get; private set;}
+    [field: SerializeField, Min(1)] public float Max {get; private set;}
+    [field: SerializeField, Min(1)] public float Current {get; private set;}
     [field: SerializeField] public List<ListenerBase> ListenerList {get; private set;}
 
     private AttackManager _attackManager;
@@ -42,6 +42,8 @@ public class HealthLifecycle : MonoBehaviour, IListenable, IAttackable
         }
 
         Current = Mathf.Max(0, Current - amount);
+
+        Debug.Log(Current);
 
         if (Current <= 0)
         {
