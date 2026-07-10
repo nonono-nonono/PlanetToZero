@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Death : ReactionBase
+public class Delete : ReactionBase
 {
     [SerializeField] private GameObject _target;
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum HealthEvent
@@ -44,24 +45,6 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
         InitializeRegistry();
     }
 
-    private void InitializeRegistry()
-    {
-        foreach (ListenerBase listener in OnDamageList)
-        {
-            _listenerRegistry.Register(HealthEvent.OnDamage, listener);
-        }
-
-        foreach (ListenerBase listener in OnHealList)
-        {
-            _listenerRegistry.Register(HealthEvent.OnHeal, listener);
-        }
-
-        foreach (ListenerBase listener in OnDeathList)
-        {
-            _listenerRegistry.Register(HealthEvent.OnDeath, listener);
-        }
-    }
-
     public void GetAttackManagerReference(AttackManager attackManager)
     {
         _attackManager = attackManager;
@@ -79,27 +62,19 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
 
     public float TakeDamage(float amount)
     {
-        float remainder = 0;
-        float damageTaken;
+        amount = Mathf.Max(0, amount);
 
-        if (amount > Current)
-        {
-            damageTaken = Current;
-            remainder = amount - Current;
-        }
-        else
-        {
-            damageTaken = amount;
-        }
+        float damageTaken = Mathf.Min(amount, Current);
+        float remainder = amount - damageTaken;
 
-        Current = Mathf.Max(0, Current - amount);
+        Current -= damageTaken;
 
         foreach(ListenerBase listener in _listenerRegistry.FetchListenersByType(HealthEvent.OnDamage))
         {
             listener.Fire(new HealthDamageContext(damageTaken));
         }
 
-        Debug.Log(Current);
+        Debug.Log($"{Current}, {gameObject}");
 
         if (Current <= 0)
         {
@@ -116,7 +91,34 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
 
     public void Heal(float amount)
     {
-        Current = Mathf.Min(Max, Current + amount);
+        amount = Mathf.Max(0, amount);
+        
+        float healingDone = Mathf.Min(amount, Max - Current);
+
+        Current += healingDone;
+
+        foreach(ListenerBase listener in _listenerRegistry.FetchListenersByType(HealthEvent.OnHeal))
+        {
+            listener.Fire(new HealthHealContext(healingDone));
+        }
+    }
+
+    private void InitializeRegistry()
+    {
+        foreach (ListenerBase listener in OnDamageList)
+        {
+            _listenerRegistry.Register(HealthEvent.OnDamage, listener);
+        }
+
+        foreach (ListenerBase listener in OnHealList)
+        {
+            _listenerRegistry.Register(HealthEvent.OnHeal, listener);
+        }
+
+        foreach (ListenerBase listener in OnDeathList)
+        {
+            _listenerRegistry.Register(HealthEvent.OnDeath, listener);
+        }
     }
 }
 

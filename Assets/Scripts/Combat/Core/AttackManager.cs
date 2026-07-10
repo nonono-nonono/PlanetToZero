@@ -42,9 +42,9 @@ public class AttackManager : MonoBehaviour
     }
 
 
-    public void DealDamageDefault(AttackTypes attackType, Team team, float amount)
+    public void DealDamageDefault(AttackTypes attackType, Team targetTeam, float amount)
     {
-        if (team == _team) return;
+        if (targetTeam != _team) return;
 
         List<IAttackable> targets = _attackables.OrderByDescending(a => AttackablePriorities.GetPriority(attackType, a)).ToList();
 
