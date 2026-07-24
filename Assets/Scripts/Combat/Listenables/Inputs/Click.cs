@@ -10,16 +10,21 @@ public class ClickContext: EventContext
 
 public class Click : MonoBehaviour, IListenable
 {
-    [field: SerializeField] public List<ListenerBase> ListenerList {get; private set;}
+    [field: SerializeField] private List<ListenerBase> _listenerList;
 
     public void Register(ListenerBase listener)
     {
-        ListenerList.Add(listener);
+        _listenerList.Add(listener);
     }
 
     public void Deregister(ListenerBase listener)
     {
-        ListenerList.Remove(listener);
+        _listenerList.Remove(listener);
+    }
+
+    public ListenerBase[] FetchListeners()
+    {
+        return _listenerList.ToArray();
     }
 
     void OnClick(InputValue value)
@@ -27,7 +32,7 @@ public class Click : MonoBehaviour, IListenable
         Vector2 screenPos = Mouse.current.position.ReadValue();
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPos);
 
-        foreach (ListenerBase listener in ListenerList)
+        foreach (ListenerBase listener in _listenerList)
         {
             // Implicit type conversion from Vector3 --> Vector2
             listener.Fire(new ClickContext(worldPos));

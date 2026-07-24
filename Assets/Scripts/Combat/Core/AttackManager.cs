@@ -41,7 +41,6 @@ public class AttackManager : MonoBehaviour
         AttackManagerRegistry.Managers.Remove(this);
     }
 
-
     public void DealDamageDefault(AttackTypes attackType, Team targetTeam, float amount)
     {
         if (targetTeam != _team) return;

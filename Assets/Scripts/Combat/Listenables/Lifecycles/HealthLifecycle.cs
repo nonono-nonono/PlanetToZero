@@ -1,24 +1,24 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public enum HealthEvent
 {
-    OnDamage,
-    OnHeal,
+    OnChanged,
     OnDeath
 }
 
-public class HealthDamageContext : EventContext
+public class HealthChangedContext : EventContext, IBarContext
 {
-    public float Amount;
-    public HealthDamageContext(float amount) => Amount = amount;
-}
+    public float Amount {get;}
+    public float Current {get;}
+    public float Max {get;}
 
-public class HealthHealContext : EventContext
-{
-    public float Amount;
-    public HealthHealContext(float amount) => Amount = amount;
+    public HealthChangedContext(float amount, float current, float max)
+    {
+        Amount = amount;
+        Current = current;
+        Max = max;
+    }
 }
 
 public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, IAttackable
@@ -28,11 +28,10 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
     [field: SerializeField, Min(1)] public float Current {get; private set;}
 
     [field: Header("Event Types")]
-    [field: SerializeField] public List<ListenerBase> OnDamageList {get; private set;}
-    [field: SerializeField] public List<ListenerBase> OnHealList {get; private set;}
-    [field: SerializeField] public List<ListenerBase> OnDeathList {get; private set;}
+    public List<ListenerBase> OnChangedList;
+    public List<ListenerBase> OnDeathList;
 
-    private readonly ListenerRegistry<HealthEvent>_listenerRegistry = new();
+    private readonly ListenerRegistry<HealthEvent> _listenerRegistry = new();
     private AttackManager _attackManager;
 
     void Awake()
@@ -43,6 +42,20 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
         }
 
         InitializeRegistry();
+    }
+
+    void Start()
+    {
+        foreach (ListenerBase listenerBase in _listenerRegistry.FetchListenersByType(HealthEvent.OnChanged))
+        {
+            listenerBase.Fire(new HealthChangedContext(Current, Current, Max));
+        }
+    }
+
+    [ContextMenu("Take Damage")]
+    void Test()
+    {
+        TakeDamage(10);
     }
 
     public void GetAttackManagerReference(AttackManager attackManager)
@@ -60,21 +73,24 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
         _listenerRegistry.Deregister(eventType, listener);
     }
 
+    public ListenerBase[] FetchListenersByType(HealthEvent eventType)
+    {
+        return _listenerRegistry.FetchListenersByType(eventType);
+    }
+
     public float TakeDamage(float amount)
     {
         amount = Mathf.Max(0, amount);
 
         float damageTaken = Mathf.Min(amount, Current);
         float remainder = amount - damageTaken;
-
+ 
         Current -= damageTaken;
 
-        foreach(ListenerBase listener in _listenerRegistry.FetchListenersByType(HealthEvent.OnDamage))
+        foreach(ListenerBase listener in _listenerRegistry.FetchListenersByType(HealthEvent.OnChanged))
         {
-            listener.Fire(new HealthDamageContext(damageTaken));
+            listener.Fire(new HealthChangedContext(-damageTaken, Current, Max));
         }
-
-        Debug.Log($"{Current}, {gameObject}");
 
         if (Current <= 0)
         {
@@ -97,22 +113,17 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
 
         Current += healingDone;
 
-        foreach(ListenerBase listener in _listenerRegistry.FetchListenersByType(HealthEvent.OnHeal))
+        foreach(ListenerBase listener in _listenerRegistry.FetchListenersByType(HealthEvent.OnChanged))
         {
-            listener.Fire(new HealthHealContext(healingDone));
+            listener.Fire(new HealthChangedContext(healingDone, Current, Max));
         }
     }
 
     private void InitializeRegistry()
     {
-        foreach (ListenerBase listener in OnDamageList)
+        foreach (ListenerBase listener in OnChangedList)
         {
-            _listenerRegistry.Register(HealthEvent.OnDamage, listener);
-        }
-
-        foreach (ListenerBase listener in OnHealList)
-        {
-            _listenerRegistry.Register(HealthEvent.OnHeal, listener);
+            _listenerRegistry.Register(HealthEvent.OnChanged, listener); 
         }
 
         foreach (ListenerBase listener in OnDeathList)
