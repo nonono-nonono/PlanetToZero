@@ -9,7 +9,7 @@ public class BulletContext : EventContext
 // Simple Bullet, Targets a specific team only, deletes itself and returns the first game object with an attack manager of the target team on hit.
 public class Bullet : MonoBehaviour, IListenable
 {
-    [field: SerializeField] public Team TargetTeam {get; private set;}
+    public Team TargetTeam;
     [field: SerializeField] private List<ListenerBase> _listenerList;
     private bool canHit; 
 

@@ -13,14 +13,14 @@ public class MouseBulletSummon : ReactionBase
     public float Speed;
     public float BulletDuration;
     public GameObject AttackOrigin;
-    public GameObject BulletObject;
+    public GameObject BulletPrefab;
 
     public override void Execute(EventContext ctx)
     {
         if (ctx is ClickContext clickContext)
         {
             Vector2 direction = (clickContext.MousePos - (Vector2)transform.position).normalized;
-            GameObject newBullet = Instantiate(BulletObject);
+            GameObject newBullet = BulletPoolManager.Instance.FetchBullet(BulletPrefab);
             newBullet.transform.position = transform.position;
             StartCoroutine(MoveBullet(newBullet.GetComponent<Rigidbody2D>(), direction, Speed));
         }
@@ -32,6 +32,6 @@ public class MouseBulletSummon : ReactionBase
 
         yield return new WaitForSeconds(BulletDuration);
 
-        Destroy(rb.gameObject);
+        BulletPoolManager.Instance.ReturnBullet(BulletPrefab, rb.gameObject);
     }
 }

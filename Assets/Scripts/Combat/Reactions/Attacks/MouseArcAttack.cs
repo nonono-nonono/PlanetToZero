@@ -9,7 +9,7 @@ public class MouseArcAttack : ReactionBase
 {
     public Team TargetTeam;
     public float Range;
-     public float Damage;
+    public float Damage;
     [Range(0f, 360f)] public float ArcAngle;
     public GameObject AttackOrigin;
 
