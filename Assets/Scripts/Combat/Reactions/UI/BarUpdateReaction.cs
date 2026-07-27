@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.UIElements;
 
-public class Bar : ReactionBase
+public class BarUpdateReaction : ReactionBase
 {
     [SerializeField] private Scrollbar _scrollbar;
     [SerializeField] private TextMeshProUGUI _updateText;

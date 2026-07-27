@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class BulletContext : EventContext
+public class BulletContext : EventContext, IDamageContext
 {
-    public AttackManager Hit;
+    public AttackManager AttackManager {get;}
+
+    public BulletContext(AttackManager hit)
+    {
+        AttackManager = hit;
+    }
 }
 
 [RequireComponent(typeof(Rigidbody2D))]
@@ -30,7 +35,13 @@ public class Bullet : MonoBehaviour, IListenable
         
         if (attackManager && attackManager.Team == _targetTeam)
         {
-            Debug.Log(gameObject);
+            if (_moveRoutine != null) StopCoroutine(_moveRoutine);
+
+            foreach (ListenerBase listener in _listenerList)
+            {
+                listener.Fire(new BulletContext(attackManager));
+            }
+
             BulletPoolManager.Instance.ReturnBullet(gameObject);
         }
     }
@@ -38,8 +49,9 @@ public class Bullet : MonoBehaviour, IListenable
     public void Shoot(float speed, Vector2 direction, float duration, Team targetTeam)
     {
         _targetTeam = targetTeam;
-        StartCoroutine(MoveBullet(speed, direction, duration));
+        _moveRoutine = StartCoroutine(MoveBullet(speed, direction, duration));
     }
+
     public void Register(ListenerBase listener)
     {
         _listenerList.Add(listener);

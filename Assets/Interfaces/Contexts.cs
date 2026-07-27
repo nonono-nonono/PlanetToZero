@@ -4,3 +4,8 @@ public interface IBarContext
     float Max {get;}
     float Amount {get;}
 }
+
+public interface IDamageContext
+{
+    AttackManager AttackManager {get;}
+}

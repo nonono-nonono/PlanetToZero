@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class Delete : ReactionBase
+public class DeleteReaction : ReactionBase
 {
     [SerializeField] private GameObject _target;
 

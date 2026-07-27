@@ -1,7 +1,7 @@
 using UnityEngine;
 
 // Shoots a bullet towards mouse position
-public class MouseBulletSummon : ReactionBase
+public class MouseBulletSummonReaction : ReactionBase
 {
     public Team TargetTeam;
     public float Speed;

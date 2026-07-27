@@ -5,7 +5,7 @@ using UnityEngine;
 
 // Attacks in an arc shape using mouse position, can implement a default way if mouse position is not given later.
 // Multi-hits by default
-public class MouseArcAttack : ReactionBase
+public class MouseArcAttackReaction : ReactionBase
 {
     public Team TargetTeam;
     public float Range;
