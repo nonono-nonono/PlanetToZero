@@ -9,12 +9,13 @@ public enum Team
     Enemy
 }
 
+[RequireComponent(typeof(Collider2D))]
 public class AttackManager : MonoBehaviour
 {
+    public Team Team;
     // Work around for Unity limitation on showing List<Interfaces> in Inspector
     public List<MonoBehaviour> AttackableObjs;
     private List<IAttackable> _attackables;
-    [SerializeField] private Team _team;
     
     void Awake()
     {
@@ -44,7 +45,7 @@ public class AttackManager : MonoBehaviour
 
     public void DealDamageDefault(AttackTypes attackType, Team targetTeam, float amount)
     {
-        if (targetTeam != _team) return;
+        if (targetTeam != Team) return;
 
         List<IAttackable> targets = _attackables.OrderByDescending(a => AttackablePriorities.GetPriority(attackType, a)).ToList();
 
