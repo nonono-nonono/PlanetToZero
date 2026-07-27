@@ -1,23 +1,32 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class BulletContext : EventContext
 {
-    public GameObject hit;
+    public AttackManager Hit;
 }
 
-// Simple Bullet, Targets a specific team only, deletes itself and returns the first game object with an attack manager of the target team on hit.
+[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(Collider2D))]
+[RequireComponent(typeof(PooledBullet))]
 public class Bullet : MonoBehaviour, IListenable
 {
-    public Team TargetTeam;
     [field: SerializeField] private List<ListenerBase> _listenerList;
-    private bool canHit; 
+    private Rigidbody2D _rb;
+    private Collider2D _cd;
+    private Team _targetTeam = Team.None;
 
-    public void Activate()
+    void Awake()
     {
-        canHit = true;
+        _rb = GetComponent<Rigidbody2D>();
+        _cd = GetComponent<Collider2D>();
     }
-
+    public void Shoot(float speed, Vector2 direction, float duration, Team targetTeam)
+    {
+        _targetTeam = targetTeam;
+        StartCoroutine(MoveBullet(speed, direction, duration));
+    }
     public void Register(ListenerBase listener)
     {
         _listenerList.Add(listener);
@@ -31,5 +40,21 @@ public class Bullet : MonoBehaviour, IListenable
     public ListenerBase[] FetchListeners()
     {
         return _listenerList.ToArray();
+    }
+    private IEnumerator MoveBullet(float speed, Vector2 direction, float duration)
+    {
+        _rb.linearVelocity = direction * speed;
+
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            yield return null;
+        }
+
+        _rb.linearVelocity = Vector2.zero;
+        _targetTeam = Team.None;
+        BulletPoolManager.Instance.ReturnBullet(gameObject);
     }
 }

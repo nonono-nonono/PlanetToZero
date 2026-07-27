@@ -1,9 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 // Shoots a bullet towards mouse position
@@ -20,18 +14,19 @@ public class MouseBulletSummon : ReactionBase
         if (ctx is ClickContext clickContext)
         {
             Vector2 direction = (clickContext.MousePos - (Vector2)transform.position).normalized;
-            GameObject newBullet = BulletPoolManager.Instance.FetchBullet(BulletPrefab);
-            newBullet.transform.position = transform.position;
-            StartCoroutine(MoveBullet(newBullet.GetComponent<Rigidbody2D>(), direction, Speed));
+            
+            GameObject obj = BulletPoolManager.Instance.FetchBullet(BulletPrefab);
+            obj.transform.position = AttackOrigin.transform.position;
+
+            Bullet newBullet = obj.GetComponent<Bullet>();
+
+            if (obj.GetComponent<Bullet>() == null)
+            {
+                Debug.LogError($"{BulletPrefab} has no bullet component!");
+                return;
+            }
+
+            newBullet.Shoot(Speed, direction, BulletDuration, TargetTeam);
         }
-    }
-
-    private IEnumerator MoveBullet(Rigidbody2D rb, Vector2 direction, float speed)
-    {
-        rb.linearVelocity = direction * speed;
-
-        yield return new WaitForSeconds(BulletDuration);
-
-        BulletPoolManager.Instance.ReturnBullet(BulletPrefab, rb.gameObject);
     }
 }

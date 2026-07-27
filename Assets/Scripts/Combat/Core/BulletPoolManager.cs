@@ -1,9 +1,5 @@
 using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Data;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Pool;
 
 /* 
 Designer (me) just Fetches bullets and this return them. This just pools bullets automatically that it has never seen before.
@@ -36,7 +32,8 @@ public class BulletPool
         }
         else
         {
-            bullet = GameObject.Instantiate(PooledPrefab, PoolParent);
+            GameObject newObj = bullet = GameObject.Instantiate(PooledPrefab, PoolParent);
+            newObj.GetComponent<PooledBullet>().OriginPrefab = PooledPrefab;
         }
 
         bullet.SetActive(true);
@@ -63,7 +60,9 @@ public class BulletPool
         for (int i = 0; i <= amount; i++)
         {
             GameObject newObj = GameObject.Instantiate(PooledPrefab, PoolParent);
+            newObj.GetComponent<PooledBullet>().OriginPrefab = PooledPrefab;
             newObj.SetActive(false);
+
             Available.Add(newObj);
         }
     }
@@ -93,19 +92,48 @@ public class BulletPoolManager : MonoBehaviour
     {
         foreach (GameObject bulletPrefab in _poolOnStart)
         {
+            if (bulletPrefab.GetComponent<PooledBullet>() == null)
+            {
+                Debug.LogWarning($"{bulletPrefab} as no pooled bullet component!");
+                continue;
+            }
+
             CreatePool(bulletPrefab);
         }
     }
 
     public GameObject FetchBullet(GameObject bulletPrefab)
     {
-        BulletPool pool = _bulletPools.TryGetValue(bulletPrefab, out BulletPool p) ? p : _bulletPools[bulletPrefab] = CreatePool(bulletPrefab);
+        BulletPool pool;
+
+        if (bulletPrefab.GetComponent<PooledBullet>() == null)
+        {
+            Debug.LogError($"Failed to fetch a clone for {bulletPrefab}, it has no pooled bullet component!");
+            return null;
+        }
+
+        if (_bulletPools.TryGetValue(bulletPrefab, out BulletPool p))
+        {
+            pool = p;
+        } 
+        else
+        {
+            pool = _bulletPools[bulletPrefab] = CreatePool(bulletPrefab);
+        }
+
         return pool.FetchBullet();
     }
 
-    public void ReturnBullet(GameObject bulletPrefab, GameObject bulletObject)
+    public void ReturnBullet(GameObject bulletObject)
     {
-        BulletPool pool = _bulletPools.TryGetValue(bulletPrefab, out BulletPool p) ? p : _bulletPools[bulletPrefab] = CreatePool(bulletPrefab);
+        if (bulletObject.GetComponent<PooledBullet>() == null)
+        {
+            Debug.LogError($"Failed to return {bulletObject} to a pool, it has no PooledBullet component!");
+            return;
+        }
+
+        PooledBullet poolObj = bulletObject.GetComponent<PooledBullet>();
+        BulletPool pool = _bulletPools.TryGetValue(poolObj.OriginPrefab, out BulletPool p) ? p : _bulletPools[poolObj.OriginPrefab] = CreatePool(poolObj.OriginPrefab);
         pool.ReturnBullet(bulletObject);
     }
 
