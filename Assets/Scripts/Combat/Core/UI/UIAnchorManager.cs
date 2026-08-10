@@ -30,7 +30,7 @@ public class UIAnchorManager : MonoBehaviour
     {
         if (_uiRegistry[uiAnchor] == null)
         {
-            _uiRegistry[uiAnchor] = Instantiate(uiAnchor.UIPrefab, _enemyCanvas.transform);
+            _uiRegistry[uiAnchor] = Instantiate(uiAnchor.gameObject, _enemyCanvas.transform);
         }
         else
         {

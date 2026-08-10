@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.Rendering.UI;
 
+[ExecuteAlways]
 public class UIAnchor : MonoBehaviour
 {
-    public GameObject UIPrefab;
+    public RectTransform PanelParent;
 
     void OnEnable()
     {
