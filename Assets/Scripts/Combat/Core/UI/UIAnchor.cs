@@ -1,10 +1,9 @@
 using UnityEngine;
 using UnityEngine.Rendering.UI;
 
-[ExecuteAlways]
 public class UIAnchor : MonoBehaviour
 {
-    public RectTransform PanelParent;
+    public RectTransform Panel;
 
     void OnEnable()
     {
