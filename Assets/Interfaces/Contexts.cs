@@ -9,3 +9,13 @@ public interface IDamageContext
 {
     AttackManager AttackManager {get;}
 }
+
+public interface IConditionalContext
+{
+    bool ConditionMet {get;}
+}
+
+public interface IInitializeContext
+{
+    bool IsInitializing {get;}
+}

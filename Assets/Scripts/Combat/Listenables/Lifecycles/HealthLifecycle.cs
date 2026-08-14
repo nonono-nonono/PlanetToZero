@@ -7,17 +7,19 @@ public enum HealthEvent
     OnDeath
 }
 
-public class HealthChangedContext : EventContext, IBarContext
+public class HealthChangedContext : EventContext, IBarContext, IInitializeContext
 {
     public float Amount {get;}
     public float Current {get;}
     public float Max {get;}
+    public bool IsInitializing {get;}
 
-    public HealthChangedContext(float amount, float current, float max)
+    public HealthChangedContext(float amount, float current, float max, bool isInitializing)
     {
         Amount = amount;
         Current = current;
         Max = max;
+        IsInitializing = isInitializing;
     }
 }
 
@@ -48,7 +50,7 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
     {
         foreach (ListenerBase listenerBase in _listenerRegistry.FetchListenersByType(HealthEvent.OnChanged))
         {
-            listenerBase.Fire(new HealthChangedContext(Current, Current, Max));
+            listenerBase.Fire(new HealthChangedContext(Current, Current, Max, true));
         }
     }
 
@@ -89,7 +91,7 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
 
         foreach(ListenerBase listener in _listenerRegistry.FetchListenersByType(HealthEvent.OnChanged))
         {
-            listener.Fire(new HealthChangedContext(-damageTaken, Current, Max));
+            listener.Fire(new HealthChangedContext(-damageTaken, Current, Max, false));
         }
 
         if (Current <= 0)
@@ -115,7 +117,7 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
 
         foreach(ListenerBase listener in _listenerRegistry.FetchListenersByType(HealthEvent.OnChanged))
         {
-            listener.Fire(new HealthChangedContext(healingDone, Current, Max));
+            listener.Fire(new HealthChangedContext(healingDone, Current, Max, false));
         }
     }
 

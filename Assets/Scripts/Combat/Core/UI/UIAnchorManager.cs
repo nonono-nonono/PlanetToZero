@@ -8,6 +8,7 @@ public class UIAnchorManager : MonoBehaviour
     public static UIAnchorManager Instance;
     [SerializeField] private Canvas _enemyCanvas;
     private Dictionary<UIAnchor, RectTransform> _uiRegistry = new();
+    private Queue<(UIAnchor uiAnchor, RectTransform rectTranform, bool addingToCanvas)> _parentingQueue = new();
 
     void Awake()
     {
@@ -21,6 +22,30 @@ public class UIAnchorManager : MonoBehaviour
     }
 
     void Update()
+    {
+        while (_parentingQueue.Count > 0)
+        {
+            var (uiAnchor, rectTranform, addingToCanvas) = _parentingQueue.Dequeue();
+
+            if (addingToCanvas)
+            {
+                rectTranform.transform.SetParent(_enemyCanvas.transform);
+            }
+            else
+            {
+                if (uiAnchor != null && rectTranform != null)
+                {
+                    rectTranform.transform.SetParent(uiAnchor.transform);
+                } 
+                else
+                {
+                    Destroy(rectTranform.gameObject);
+                }
+            }
+        }
+    }
+
+    void LateUpdate()
     {
         foreach ((UIAnchor uiAnchor, RectTransform actualUI) in _uiRegistry)
         {
@@ -46,7 +71,7 @@ public class UIAnchorManager : MonoBehaviour
         }
 
         _uiRegistry[uiAnchor] = rectTransform;
-        uiAnchor.Panel.transform.SetParent(_enemyCanvas.transform);
+        _parentingQueue.Enqueue((uiAnchor, rectTransform, true));
     }
 
     public void Deregister(UIAnchor uiAnchor)
@@ -58,10 +83,6 @@ public class UIAnchorManager : MonoBehaviour
         }
         
         _uiRegistry.Remove(uiAnchor);
-
-        if (uiAnchor != null && rectTransform != null)
-        {
-            rectTransform.transform.SetParent(uiAnchor.transform);
-        }
+        _parentingQueue.Enqueue((uiAnchor, rectTransform, false));
     }
 }

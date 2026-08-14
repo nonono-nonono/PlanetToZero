@@ -20,12 +20,6 @@ public class MouseBulletSummonReaction : ReactionBase
 
             Bullet newBullet = obj.GetComponent<Bullet>();
 
-            if (obj.GetComponent<Bullet>() == null)
-            {
-                Debug.LogError($"{BulletPrefab} has no bullet component!");
-                return;
-            }
-
             newBullet.Shoot(Speed, direction, BulletDuration, TargetTeam);
         }
     }

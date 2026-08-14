@@ -1,12 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/* 
-Designer (me) just Fetches bullets and this return them. This just pools bullets automatically that it has never seen before.
-Todo Later: Make clearing of bullets.
-
-*/
-
 public class BulletPool
 {
     public GameObject PooledPrefab;

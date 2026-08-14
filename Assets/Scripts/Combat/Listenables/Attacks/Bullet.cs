@@ -20,19 +20,20 @@ public class Bullet : MonoBehaviour, IListenable
 {
     [field: SerializeField] private List<ListenerBase> _listenerList;
     private Rigidbody2D _rb;
-    private Collider2D _cd;
     private Team _targetTeam = Team.None;
     private Coroutine _moveRoutine;
 
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-        _cd = GetComponent<Collider2D>();
+        Collider2D _cd = GetComponent<Collider2D>();
+        _cd.isTrigger = true;
     }
-    private void OnCollisionEnter2D(Collision2D collision)
+
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         AttackManager attackManager = collision.gameObject.GetComponent<AttackManager>();
-        
+
         if (attackManager && attackManager.Team == _targetTeam)
         {
             if (_moveRoutine != null) StopCoroutine(_moveRoutine);
