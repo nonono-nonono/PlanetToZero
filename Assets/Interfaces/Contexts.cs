@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public interface IBarContext
 {
     float Current {get;}
@@ -18,4 +20,9 @@ public interface IConditionalContext
 public interface IInitializeContext
 {
     bool IsInitializing {get;}
+}
+
+public interface IPositionContext
+{
+    Vector2 TargetPosition {get;}
 }

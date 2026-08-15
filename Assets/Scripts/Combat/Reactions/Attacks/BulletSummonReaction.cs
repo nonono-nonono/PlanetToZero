@@ -11,9 +11,9 @@ public class MouseBulletSummonReaction : ReactionBase
 
     public override void Execute(EventContext ctx)
     {
-        if (ctx is ClickContext clickContext)
+        if (ctx is IPositionContext directionCtx)
         {
-            Vector2 direction = (clickContext.MousePos - (Vector2)transform.position).normalized;
+            Vector2 direction = (directionCtx.TargetPosition - (Vector2)transform.position).normalized;
             
             GameObject obj = BulletPoolManager.Instance.FetchBullet(BulletPrefab);
             obj.transform.position = AttackOrigin.transform.position;

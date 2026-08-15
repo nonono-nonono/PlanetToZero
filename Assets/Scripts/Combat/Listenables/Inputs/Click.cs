@@ -2,10 +2,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class ClickContext: EventContext
+public class ClickContext: EventContext, IPositionContext
 {
-    public Vector2 MousePos;
-    public ClickContext(Vector2 worldPos) => MousePos = worldPos;
+    public Vector2 TargetPosition {get;}
+    public ClickContext(Vector2 worldPos) => TargetPosition = worldPos;
 }
 
 public class Click : MonoBehaviour, IListenable

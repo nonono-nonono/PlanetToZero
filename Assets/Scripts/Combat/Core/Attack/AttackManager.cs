@@ -32,17 +32,7 @@ public class AttackManager : MonoBehaviour
             attackable.GetAttackManagerReference(this);
         }
     }
-
-    void OnEnable()
-    {
-        AttackManagerRegistry.Managers.Add(this);
-    }
-
-    void OnDisable()
-    {
-        AttackManagerRegistry.Managers.Remove(this);
-    }
-
+    
     public void DealDamageDefault(AttackTypes attackType, Team targetTeam, float amount)
     {
         if (targetTeam != Team) return;
