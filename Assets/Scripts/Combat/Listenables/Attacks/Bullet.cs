@@ -32,6 +32,8 @@ public class Bullet : MonoBehaviour, IListenable
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+
         AttackManager attackManager = collision.gameObject.GetComponent<AttackManager>();
 
         if (attackManager && attackManager.Team == _targetTeam)
@@ -49,6 +51,8 @@ public class Bullet : MonoBehaviour, IListenable
 
     public void Shoot(float speed, Vector2 direction, float duration, Team targetTeam)
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+        
         _targetTeam = targetTeam;
         _moveRoutine = StartCoroutine(MoveBullet(speed, direction, duration));
     }
@@ -75,6 +79,12 @@ public class Bullet : MonoBehaviour, IListenable
 
         while (elapsed < duration)
         {
+            if (GameManager.Instance.GetGameState() != GameState.Playing)
+            {
+                BulletPoolManager.Instance.ReturnBullet(gameObject);
+                yield break;
+            }
+
             elapsed += Time.deltaTime;
             yield return null;
         }

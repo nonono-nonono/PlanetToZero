@@ -1,12 +1,11 @@
 using UnityEngine;
 
-public class DeleteReaction : ReactionBase
+public class EndGameReaction : ReactionBase
 {
-    public GameObject _target;
-
     public override void Execute(EventContext ctx)
     {
         if (GameManager.Instance.GetGameState() != GameState.Playing) return;
-        Destroy(_target);
+        
+        GameManager.Instance.EndGame();
     }
 }

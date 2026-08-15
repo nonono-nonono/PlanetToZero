@@ -12,6 +12,8 @@ public class BulletSplitter : ReactionBase
 
     public override void Execute(EventContext ctx)
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+        
         if (ctx is IInitializeContext initializeCtx)
         {
             if (initializeCtx.IsInitializing)

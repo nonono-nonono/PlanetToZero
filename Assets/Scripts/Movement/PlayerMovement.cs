@@ -13,11 +13,6 @@ public class PlayerMovement : MonoBehaviour
     void Awake()
     {
         _rb = GetComponent<Rigidbody2D>();
-
-        if (!_rb)
-        {
-            Debug.Log($"{gameObject} lacks a RigidBody2D. Failed to add player movement!");
-        }
     }
 
     void FixedUpdate()

@@ -10,6 +10,8 @@ public class TimerConditionalListener : ListenerBase
 
     public override void Fire(EventContext ctx)
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+
         if (ctx is IConditionalContext conditionalContext)
         {
             _canFireReactions = conditionalContext.ConditionMet;
@@ -18,6 +20,8 @@ public class TimerConditionalListener : ListenerBase
 
     void Update()
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+        
         if (_elapsed < _interval)
         {
             _elapsed += Time.deltaTime;

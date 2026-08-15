@@ -10,9 +10,12 @@ public class RectangularAreaAttackReaction : ReactionBase
     public Team TargetTeam;
     public float Damage;
     public float WindUpTime;
+    private GameObject _currentAttackIndicator;
 
     public override void Execute(EventContext ctx)
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+        
         if (ctx is IPositionContext directionCtx)
         {
             StartCoroutine(AttackRoutine(directionCtx));
@@ -24,10 +27,17 @@ public class RectangularAreaAttackReaction : ReactionBase
         Vector2 direction = (directionCtx.TargetPosition - (Vector2)AttackOrigin.transform.position).normalized;
         GameObject newAttackIndicator = Instantiate(AttackIndicatorPrefab);
 
+        _currentAttackIndicator = newAttackIndicator;
+
         newAttackIndicator.transform.SetPositionAndRotation(AttackOrigin.transform.position, Quaternion.LookRotation(Vector3.forward, direction));
         newAttackIndicator.transform.localScale = new Vector3(AttackSize.x, AttackSize.y, 1);
 
         yield return Wait(WindUpTime);
+
+        if (GameManager.Instance.GetGameState() != GameState.Playing)
+        {
+            yield break;
+        }
 
         // Reverse of Cos(x), Sin(y) formula
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg - 90f;
@@ -48,18 +58,40 @@ public class RectangularAreaAttackReaction : ReactionBase
             manager.DealDamageDefault(AttackTypes.Basic, TargetTeam, Damage);
         }
 
-
         Destroy(newAttackIndicator);
-}
+        _currentAttackIndicator = null;
+    }
 
     private IEnumerator Wait(float time)
     {
         float elapsed = 0f;
 
-        while (elapsed < WindUpTime)
+        while (elapsed < time)
         {
+            if (GameManager.Instance.GetGameState() != GameState.Playing)
+            {
+                if (_currentAttackIndicator != null)
+                {
+                    Destroy(_currentAttackIndicator);
+                    _currentAttackIndicator = null;
+                }
+                
+                yield break;
+            }
+
             elapsed += Time.deltaTime;
             yield return null;
+        }
+    }
+
+    void OnDestroy()
+    {
+        StopAllCoroutines();
+
+        if (_currentAttackIndicator != null)
+        {
+            Destroy(_currentAttackIndicator);
+            _currentAttackIndicator = null;
         }
     }
 }

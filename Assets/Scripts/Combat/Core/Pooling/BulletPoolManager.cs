@@ -37,6 +37,8 @@ public class BulletPool
 
     public void ReturnBullet(GameObject bulletObject)
     {
+        if (Available.Contains(bulletObject)) return;
+
         if (InUse.Contains(bulletObject))
         {
             InUse.Remove(bulletObject);
@@ -51,7 +53,7 @@ public class BulletPool
 
     public void AllocateBullets(int amount)
     {
-        for (int i = 0; i <= amount; i++)
+        for (int i = 0; i < amount; i++)
         {
             GameObject newObj = GameObject.Instantiate(PooledPrefab, PoolParent);
             newObj.GetComponent<PooledBullet>().OriginPrefab = PooledPrefab;
@@ -112,7 +114,7 @@ public class BulletPoolManager : MonoBehaviour
         } 
         else
         {
-            pool = _bulletPools[bulletPrefab] = CreatePool(bulletPrefab);
+            pool = CreatePool(bulletPrefab);
         }
 
         return pool.FetchBullet();
@@ -127,7 +129,7 @@ public class BulletPoolManager : MonoBehaviour
         }
 
         PooledBullet poolObj = bulletObject.GetComponent<PooledBullet>();
-        BulletPool pool = _bulletPools.TryGetValue(poolObj.OriginPrefab, out BulletPool p) ? p : _bulletPools[poolObj.OriginPrefab] = CreatePool(poolObj.OriginPrefab);
+        BulletPool pool = _bulletPools.TryGetValue(poolObj.OriginPrefab, out BulletPool p) ? p : CreatePool(poolObj.OriginPrefab);
         pool.ReturnBullet(bulletObject);
     }
 

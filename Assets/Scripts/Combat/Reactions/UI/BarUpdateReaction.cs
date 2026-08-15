@@ -16,6 +16,8 @@ public class BarUpdateReaction : ReactionBase
 
     public override void Execute(EventContext ctx)
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+        
         if (ctx is IBarContext barContext)
         {
             float targetSize = barContext.Current / barContext.Max;

@@ -48,6 +48,8 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
 
     void Start()
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+
         foreach (ListenerBase listenerBase in _listenerRegistry.FetchListenersByType(HealthEvent.OnChanged))
         {
             listenerBase.Fire(new HealthChangedContext(Current, Current, Max, true));
@@ -82,6 +84,8 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
 
     public float TakeDamage(float amount)
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return 0f;
+
         amount = Mathf.Max(0, amount);
 
         float damageTaken = Mathf.Min(amount, Current);
@@ -109,6 +113,8 @@ public class HealthLifecycle : MonoBehaviour, IDynamicListenable<HealthEvent>, I
 
     public void Heal(float amount)
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+        
         amount = Mathf.Max(0, amount);
         
         float healingDone = Mathf.Min(amount, Max - Current);

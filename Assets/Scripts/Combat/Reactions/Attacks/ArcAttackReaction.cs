@@ -13,6 +13,8 @@ public class ArcAttackReaction : ReactionBase
 
     public override void Execute(EventContext ctx)
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+        
         if (ctx is IPositionContext clickContext)
         {
             Vector2 direction = (clickContext.TargetPosition - (Vector2)transform.position).normalized;

@@ -29,6 +29,8 @@ public class Click : MonoBehaviour, IListenable
 
     void OnClick(InputValue value)
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+        
         Vector2 screenPos = Mouse.current.position.ReadValue();
         Vector3 worldPos = Camera.main.ScreenToWorldPoint(screenPos);
 

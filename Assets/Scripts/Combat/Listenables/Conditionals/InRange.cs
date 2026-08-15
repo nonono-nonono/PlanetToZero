@@ -25,6 +25,10 @@ public class InRange : MonoBehaviour, IListenable, IContextPullable
 
     void Update()
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return;
+
+        if (_targetTransform == null) return;
+
         bool isRangeChanged = CheckRange();
 
         if (isRangeChanged)
@@ -38,6 +42,10 @@ public class InRange : MonoBehaviour, IListenable, IContextPullable
 
     private bool CheckRange()
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return false;
+
+        if (_targetTransform == null) return false;
+        
         float distance = (transform.position - _targetTransform.position).magnitude;
 
         if (distance <= range && !_inRange)
@@ -72,6 +80,10 @@ public class InRange : MonoBehaviour, IListenable, IContextPullable
 
     public EventContext GrabContext()
     {
+        if (GameManager.Instance.GetGameState() != GameState.Playing) return null;
+
+        if (_targetTransform == null) return null;
+        
         CheckRange();
 
         return new RangeContext(_inRange, _targetTransform.position);
