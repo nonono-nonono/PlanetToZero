@@ -1,5 +1,6 @@
 using UnityEngine;
 
+// All contexts here is to allow for listenables to implement them for their contexts. Listeners and reactions can choose whether they want to use them or not.
 public interface IBarContext
 {
     float Current {get;}

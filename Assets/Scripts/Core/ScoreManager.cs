@@ -1,10 +1,12 @@
 using UnityEngine;
 
+// Keeps track of current score derived from changed score reaction for current play through.
 public class ScoreManager : MonoBehaviour
 {
     public static ScoreManager Instance;
     private float _score;
 
+    // Singleton pattern which ensures only 1 score manager exists.
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -21,10 +23,6 @@ public class ScoreManager : MonoBehaviour
         _score += amount;
     }
     
-    public void ResetScore()
-    {
-        _score = 0;
-    }
 
     public int GetScore()
     {

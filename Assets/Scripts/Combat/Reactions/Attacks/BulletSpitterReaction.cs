@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+// Spits multiple bullets out from all directions.
 public class BulletSplitter : ReactionBase
 {
     public Team TargetTeam;
@@ -11,9 +12,11 @@ public class BulletSplitter : ReactionBase
     public GameObject BulletPrefab;
 
     public override void Execute(EventContext ctx)
-    {
+    {   
+        // Ignores if game state isn't playing.
         if (GameManager.Instance.GetGameState() != GameState.Playing) return;
         
+        // If event context given implements IInitializeContext, ignore if the event is fired just to initialize everything.
         if (ctx is IInitializeContext initializeCtx)
         {
             if (initializeCtx.IsInitializing)
@@ -23,6 +26,7 @@ public class BulletSplitter : ReactionBase
         float angleStep = 360f / BulletCount;
         Vector3 bulletSpawnPos = AttackOrigin.transform.position;
 
+        // For each bullet, calculate the direction the bullet will travel, fetch a bullet from the pool, position the bullet at the attack origin and shoot the bullet.
         for (int i = 0; i < BulletCount; i++)
         {
             float angle = i * angleStep;
@@ -37,6 +41,7 @@ public class BulletSplitter : ReactionBase
         }
     }
 
+    // Converts an angle to vector2
     private Vector2 ConvertToDirection(float angle)
     {
         float angleRad = angle * Mathf.Deg2Rad;
